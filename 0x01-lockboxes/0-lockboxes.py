@@ -1,44 +1,20 @@
 #!/usr/bin/python3
-"""Lockboxes"""
+"""
+Method to determine if all boxes can be opened
+Using prototype: def canUnlockAll(boxes)
+"""
 
 
 def canUnlockAll(boxes):
-    """Check if all boxes can be opened
-
-    Args:
-        boxes (arr[int]): Boxes contains the key to open other boxes
-
-    Return:
-        (bool): True otherwise false
     """
-    unlocked = [0]
-    for boxID, box in enumerate(boxes):
-        if not box:
-            continue
-        for key in box:
-            if key < len(boxes) and key not in unlocked and key != boxID:
-                unlocked.append(key)
-    if len(unlocked) == len(boxes):
-        return True
-    return False
-
-
-def canUnlockAll2(boxes):
-    """Check if all boxes can be opened
-
-    Args:
-        boxes (arr[int]): Boxes contains the key to open other boxes
-
-    Return:
-        (bool): True otherwise false
+    Check if boxes can be unlocked
     """
-    unlocked = set()
-    for boxID, box in enumerate(boxes):
-        if len(box) == 0 or boxID == 0:
-            unlocked.add(boxID)
-        for key in box:
-            if key < len(boxes) and key != boxID:
-                unlocked.add(key)
-    if len(unlocked) == len(boxes):
-        return True
-    return False
+    for key in range(1, len(boxes) - 1):
+        ctr = False
+        for idx in range(len(boxes)):
+            ctr = (key in boxes[idx] and key != idx)
+            if ctr:
+                break
+        if ctr is False:
+            return ctr
+    return True
