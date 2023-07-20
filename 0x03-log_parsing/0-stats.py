@@ -1,36 +1,38 @@
 #!/usr/bin/python3
-"""
-log parsing
-"""import sys
-from collections import defaultdict
+"""reads stdin line by line and computes metrics"""
+
+import sys
 
 total_size = 0
-status_counts = defaultdict(int)
-line_count = 0
+counter = 0
+codes = ['200', '301', '400', '401', '403', '404', '405', '500']
+dict_counter = {'200': 0, '301': 0,
+                '400': 0, '401': 0,
+                '403': 0, '404': 0,
+                '405': 0, '500': 0}
 
 try:
     for line in sys.stdin:
-        line_count += 1
-        parts = line.split()
-        if len(parts) != 7:
-            continue
-        ip_address, _, _, path, status_code, file_size, _ = parts
-        if path != '/projects/260':
-            continue
-        try:
-            file_size = int(file_size)
-            status_code = int(status_code)
-        except ValueError:
-            continue
-        total_size += file_size
-        status_counts[status_code] += 1
-        if line_count % 10 == 0:
-            print(f'Total file size: {total_size}')
-            for code in sorted(status_counts):
-                print(f'{code}: {status_counts[code]}')
-            print()
-except KeyboardInterrupt:
-    print('Interrupted')
-    print(f'Total file size: {total_size}')
-    for code in sorted(status_counts):
-        print(f'{code}: {status_counts[code]}')
+        line_list = line.split(" ")
+        if len(line_list) > 2:
+            code = line_list[-2]
+            size = line_list[-1]
+            if code in codes:
+                dict_counter[code] += 1
+            total_size += int(size)
+            counter += 1
+
+        if counter == 10:
+            print("File size: {:d}".format(total_size))
+            for k, v in sorted(dict_counter.items()):
+                if v != 0:
+                    print("{}: {:d}".format(k, v))
+            counter = 0
+
+except Exception:
+    pass
+finally:
+    print("File size: {}".format(total_size))
+    for k, v in sorted(dict_counter.items()):
+        if v != 0:
+            print("{}: {}".format(k, v))
